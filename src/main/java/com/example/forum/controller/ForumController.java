@@ -48,7 +48,7 @@ public class ForumController {
      * 新規投稿処理
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm){
+    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm) {
         // 投稿をテーブルに格納
         reportService.saveReport(reportForm);
         // rootへリダイレクト
@@ -79,5 +79,30 @@ public class ForumController {
         // 画面遷移先を指定
         mav.setViewName("/edit");
         return mav;
+    }
+
+    /*
+     * 編集処理
+     */
+    @PutMapping("/update/{id}")
+    public ModelAndView updateContent(@PathVariable Integer id,
+                                      @ModelAttribute("formModel") ReportForm report) {
+        // UrlParameterのidを更新するentityにセット
+        report.setId(id);
+        // 編集した投稿を更新
+        reportService.saveReport(report);
+        // rootへリダイレクト
+        return new ModelAndView("redirect:/");
+    }
+
+    /*
+     * コメント投稿処理
+     */
+    @PostMapping("/commentAdd")
+    public ModelAndView commentAddContent(@ModelAttribute("formModel") ReportForm reportForm) {
+        // 投稿をテーブルに格納
+        reportService.commentAddReport(reportForm);
+        // rootへリダイレクト
+        return new ModelAndView("redirect:/");
     }
 }

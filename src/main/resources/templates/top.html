@@ -23,6 +23,19 @@
         <div class="delete-button">
             <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
                 <input type="submit" value="削除">
+                <div class="edit-button">
+                    <a th:href="@{/edit/{id}(id=${content.id})}">
+                        <input type="button" value="編集"></a>
+                </div>
+                    <a th:href="@{/edit/{id}(id=${content.id})}">
+                        <input type="button" value="編集"></a>
+            </form>
+            <form action="/commentAdd"  method="post">
+                <div class="form-area">
+                    <label>投稿内容</label>
+                    <textarea class="tweet-box" name="content"  size="20" maxlength="200" /></textarea><br/>
+                    <input type="submit" value="コメント"/>
+                </div>
             </form>
         </div>
     </div>
