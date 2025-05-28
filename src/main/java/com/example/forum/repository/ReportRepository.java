@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Integer> {
+    //findAllByOrderByIdDesc()=idを降順で並び変えてくれる。
     public List<Report> findAllByOrderByIdDesc();
 }
+
 

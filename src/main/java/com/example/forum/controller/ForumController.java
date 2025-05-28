@@ -1,5 +1,6 @@
 package com.example.forum.controller;
 
+import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
 import com.example.forum.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,9 +100,9 @@ public class ForumController {
      * コメント投稿処理
      */
     @PostMapping("/commentAdd")
-    public ModelAndView commentAddContent(@ModelAttribute("formModel") ReportForm reportForm) {
+    public ModelAndView commentAddContent(@ModelAttribute("formModel") CommentForm commentForm) {
         // 投稿をテーブルに格納
-        reportService.commentAddReport(reportForm);
+        reportService.commentAddReport(commentForm);
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
