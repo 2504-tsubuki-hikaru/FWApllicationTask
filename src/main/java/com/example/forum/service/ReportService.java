@@ -2,14 +2,15 @@ package com.example.forum.service;
 
 import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
-import com.example.forum.repository.CommentsRepository;
+import com.example.forum.repository.CommentRepository;
 import com.example.forum.repository.ReportRepository;
-import com.example.forum.repository.entity.Comments;
+import com.example.forum.repository.entity.Comment;
 import com.example.forum.repository.entity.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.stream.events.Comment;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class ReportService {
     ReportRepository reportRepository;
 
     @Autowired
-    CommentsRepository  commentsRepository;
+    CommentRepository commentsRepository;
 
     /*
      * レコード全件取得処理
@@ -85,16 +86,48 @@ public class ReportService {
         //htmlで入力された値がcontent（Controllerで指定）に入る。
         //CommentFormで受け取った値をcommentsEntityに詰め替える。
         //IDはFormに自動で入るけど、Entityには詰め替える必要があるので詰め替えられているか確認する。
-        Comments comments = setCommentEntity(commentForm);
+        Comment comments = setCommentEntity(commentForm);
         commentsRepository.save(comments);
     }
 
-    private Comments setCommentEntity(CommentForm commentForm) {
-        Comments comment = new Comments();
+    private Comment setCommentEntity(CommentForm commentForm) {
+        Comment comment = new Comment();
         comment.setId(commentForm.getId());
         comment.setText(commentForm.getText());
+        comment.setReportId(commentForm.getReportId());
+        //formのなかには現在時刻が入ってないので、ここで直接commentにsetする。
+        comment.setCreatedDate(LocalDateTime.now(ZoneId.of("Asia/Tokyo")));
+        comment.setUpdatedDate(LocalDateTime.now(ZoneId.of("Asia/Tokyo")));
         //LocalDateTime現在時刻使いかたなどで調べてみる
-        LocalDateTime.now(ZoneId.of("Asia/Tokyo"))
+        //LocalDateTime.now(ZoneId.of("Asia/Tokyo"));
         return comment;
+    }
+
+    /*
+     * コメントを全件取得
+     */
+    public List<CommentForm> findAllComment() {
+        List<Comment> comResults = commentsRepository.findAll();
+        List<CommentForm> comments = setCommentForm(comResults);
+        return comments;
+    }
+
+    /*
+     * DBから取得したデータをFormに設定(comment版）
+     */
+    private List<CommentForm> setCommentForm(List<Comment> comResults) {
+        List<CommentForm> comments = new ArrayList<>();
+
+        for (int i = 0; i < comResults.size(); i++) {
+            CommentForm comment = new CommentForm();
+            Comment result = comResults.get(i);
+            comment.setId(result.getId());
+            comment.setText(result.getText());
+            comment.setReportId(result.getReportId());
+            comment.setCreatedDate(result.getCreatedDate());
+            comment.setUpdatedDate(result.getUpdatedDate());
+            comments.add(comment);
+        }
+        return comments;
     }
 }

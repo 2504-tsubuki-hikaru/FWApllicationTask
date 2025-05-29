@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "Comments")
 @Getter
 @Setter
-public class Comments {
+public class Comment {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +25,11 @@ public class Comments {
     private String text;
 
     @Column
-    private String report_id;
+    private  int reportId;
 
     @Column
-    private LocalDateTime created_data;
+    private LocalDateTime createdDate;
 
     @Column
-    private LocalDateTime updated_data;
+    private LocalDateTime updatedDate;
 }

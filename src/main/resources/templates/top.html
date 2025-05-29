@@ -15,6 +15,8 @@
     </a>
     <div class="message-icon" th:each="content : ${contents}">
         <div>
+            <!--th:text=値を表示する役割。${content.id}"=Cotrollerから値を引き出す処理。
+            content.idになにか値があれば表示する。なければ表示しない。-->
             ID : <span th:text="${content.id}"/>
         </div>
         <div class="text">
@@ -27,14 +29,19 @@
                     <a th:href="@{/edit/{id}(id=${content.id})}">
                         <input type="button" value="編集"></a>
                 </div>
-                    <a th:href="@{/edit/{id}(id=${content.id})}">
-                        <input type="button" value="編集"></a>
             </form>
-            <form action="/commentAdd"  method="post">
+
+            <div class="message-icon" th:each="comments : ${comments}">
+                <div th:if="${content.id} == ${comments.reportId}"></div>
+                コメント内容 :<span th:text="${comments.text}"/>
+            </div>
+
+            <form method="post" action="/commentAdd">
                 <div class="form-area">
                     <label>投稿内容</label>
-                    <textarea class="tweet-box" name="content"  size="20" maxlength="200" /></textarea><br/>
+                    <textarea class="tweet-box" name="text" size="20" maxlength="200" ></textarea><br/>
                     <input type="submit" value="コメント"/>
+                    <input type="hidden" name="reportId" th:value="${content.id}"/>
                 </div>
             </form>
         </div>

@@ -27,6 +27,10 @@ public class ForumController {
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
         mav.addObject("contents", contentData);
+        //25行目のような処理も必要になる。
+        List<CommentForm> commentData = reportService.findAllComment();
+        //コメントも取得してMavにいれてhtmlで使えるようにする。
+        mav.addObject("comments", contentData);
         return mav;
     }
 
