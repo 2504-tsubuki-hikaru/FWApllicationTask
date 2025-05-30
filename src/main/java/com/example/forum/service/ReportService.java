@@ -141,4 +141,18 @@ public class ReportService {
         List<CommentForm> Comments = setCommentForm(results);
         return Comments.get(0);
     }
+
+    public void editAddReport(CommentForm editComment) {
+        Comment comments = setEditEntity(editComment);
+        commentsRepository.save(comments);
+    }
+
+    private Comment setEditEntity(CommentForm editComment) {
+        Comment comment = new Comment();
+        comment.setId(editComment.getId());
+        comment.setText(editComment.getText());
+        comment.setCreatedDate(LocalDateTime.now(ZoneId.of("Asia/Tokyo")));
+        comment.setUpdatedDate(LocalDateTime.now(ZoneId.of("Asia/Tokyo")));
+        return comment;
+    }
 }
