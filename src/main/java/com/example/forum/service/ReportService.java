@@ -70,6 +70,7 @@ public class ReportService {
      */
     public ReportForm editReport(Integer id) {
         List<Report> results = new ArrayList<>();
+        //キーに該当するレコードの取得をする。該当するキーが無ければnullを返す。
         results.add((Report) reportRepository.findById(id).orElse(null));
         List<ReportForm> reports = setReportForm(results);
         return reports.get(0);
@@ -129,5 +130,15 @@ public class ReportService {
             comments.add(comment);
         }
         return comments;
+    }
+
+    /*
+     * コメントレコード1件取得
+     */
+    public CommentForm editComment(Integer id) {
+        List<Comment> results = new ArrayList<>();
+        results.add((Comment) commentsRepository.findById(id).orElse(null));
+        List<CommentForm> Comments = setCommentForm(results);
+        return Comments.get(0);
     }
 }

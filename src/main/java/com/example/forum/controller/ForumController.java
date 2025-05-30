@@ -30,7 +30,7 @@ public class ForumController {
         //25行目のような処理も必要になる。
         List<CommentForm> commentData = reportService.findAllComment();
         //コメントも取得してMavにいれてhtmlで使えるようにする。
-        mav.addObject("comments", contentData);
+        mav.addObject("comments", commentData);
         return mav;
     }
 
@@ -108,6 +108,35 @@ public class ForumController {
         // 投稿をテーブルに格納
         reportService.commentAddReport(commentForm);
         // rootへリダイレクト
+        return new ModelAndView("redirect:/");
+    }
+
+    /*
+     * コメント編集画面表示処理
+     */
+    @GetMapping("/commentEdit/{id}")
+    public ModelAndView commentEditComment(@PathVariable Integer id) {
+        ModelAndView mav = new ModelAndView();
+        // 編集するコメントを取得
+        CommentForm comment = reportService.editComment(id);
+        // 編集するコメントをセット(htmlではformModelという値で渡す)
+        mav.addObject("formModel", comment);
+        // 画面遷移先を指定(commentEdit.html)
+        mav.setViewName("/commentEdit");
+        return mav;
+    }
+
+    /*
+     * コメント編集処理
+     */
+    @PutMapping("/commentUpdate/{id}")
+    public ModelAndView commentUpdateComment(@PathVariable Integer id,
+                                             @ModelAttribute("formModel") CommentForm comment) {
+        // UrlParameterのidを更新するentityにセット
+        comment.setId(id);
+        // 編集したコメントを更新
+        reportService.editAddReport(comment);
+        //　rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
 }

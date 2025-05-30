@@ -30,12 +30,16 @@
                         <input type="button" value="編集"></a>
                 </div>
             </form>
-
-            <div class="message-icon" th:each="comments : ${comments}">
-                <div th:if="${content.id} == ${comments.reportId}"></div>
-                コメント内容 :<span th:text="${comments.text}"/>
+<!--コメントの表示と編集-->
+            <div class="comment-icon" th:each="comment : ${comments}">
+                <div th:if="${content.id == comment.reportId}">
+                コメント内容 :<span th:text="${comment.text}"/>
+                    <a th:href="@{/commentEdit/{id}(id=${comment.id})}">
+                        <input type="button" value="編集">
+                    </a>
+                </div>
             </div>
-
+<!--コメントボタン-->
             <form method="post" action="/commentAdd">
                 <div class="form-area">
                     <label>投稿内容</label>
@@ -44,6 +48,7 @@
                     <input type="hidden" name="reportId" th:value="${content.id}"/>
                 </div>
             </form>
+            </div>
         </div>
     </div>
 </div>
