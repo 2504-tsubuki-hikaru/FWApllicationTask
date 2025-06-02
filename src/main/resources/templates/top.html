@@ -13,6 +13,12 @@
     <a href="/new">
         <button class="new-button" type="button">新規投稿</button>
     </a>
+<!--カレンダーの表示-->
+    <form method="post" action="/メソッド名"></form>
+    日付　   <input type="date" name="start" value="${start}">
+            <input type="date" name="end" value="${end}">
+            <input type="submit" value="絞込">
+
     <div class="message-icon" th:each="content : ${contents}">
         <div>
             <!--th:text=値を表示する役割。${content.id}"=Cotrollerから値を引き出す処理。
@@ -30,16 +36,24 @@
                         <input type="button" value="編集"></a>
                 </div>
             </form>
-<!--コメントの表示と編集-->
-            <div class="comment-icon" th:each="comment : ${comments}">
-                <div th:if="${content.id == comment.reportId}">
+        </div>
+        <!--コメントとボタンの表示-->
+        <div class="Edit-button" th:each="comment : ${comments}">
+            <div th:if="${content.id == comment.reportId}">
                 コメント内容 :<span th:text="${comment.text}"/>
+                <div class="edit-button">
                     <a th:href="@{/commentEdit/{id}(id=${comment.id})}">
                         <input type="button" value="編集">
-                    </a>
+                     </a>
+                </div>
+                <div class="delete-button">
+                    <form th:action="@{/commentDelete/{id}(id=${comment.id})}" th:method="delete">
+                        <input type="submit" value="削除">
+                    </form>
                 </div>
             </div>
-<!--コメントボタン-->
+        </div>
+<!--コメント編集画面遷移ボタン-->
             <form method="post" action="/commentAdd">
                 <div class="form-area">
                     <label>投稿内容</label>
@@ -48,8 +62,6 @@
                     <input type="hidden" name="reportId" th:value="${content.id}"/>
                 </div>
             </form>
-            </div>
-        </div>
     </div>
 </div>
 </body>

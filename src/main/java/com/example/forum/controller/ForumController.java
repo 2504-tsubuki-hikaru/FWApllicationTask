@@ -104,7 +104,7 @@ public class ForumController {
      * コメント投稿処理
      */
     @PostMapping("/commentAdd")
-    public ModelAndView commentAddContent(@ModelAttribute("formModel") CommentForm commentForm) {
+    public ModelAndView addComment(@ModelAttribute("formModel") CommentForm commentForm) {
         // 投稿をテーブルに格納
         reportService.commentAddReport(commentForm);
         // rootへリダイレクト
@@ -115,7 +115,7 @@ public class ForumController {
      * コメント編集画面表示処理
      */
     @GetMapping("/commentEdit/{id}")
-    public ModelAndView commentEditComment(@PathVariable Integer id) {
+    public ModelAndView editComment(@PathVariable Integer id) {
         ModelAndView mav = new ModelAndView();
         // 編集するコメントを取得
         CommentForm comment = reportService.editComment(id);
@@ -130,7 +130,7 @@ public class ForumController {
      * コメント編集処理
      */
     @PutMapping("/commentUpdate/{id}")
-    public ModelAndView commentUpdateComment(@PathVariable Integer id,
+    public ModelAndView UpdateComment(@PathVariable Integer id,
                                              @ModelAttribute("formModel") CommentForm comment) {
         // UrlParameterのidを更新するentityにセット
         comment.setId(id);
@@ -139,4 +139,25 @@ public class ForumController {
         //　rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
+
+    /*
+     * コメント削除処理
+     */
+    @DeleteMapping("/commentDelete/{id}")
+    public ModelAndView deleteComment(@PathVariable Integer id) {
+        // 投稿をテーブルに格納
+        reportService.commentDeleteById(id);
+        // rootへリダイレクト
+        return new ModelAndView("redirect:/");
+    }
+
+    /*
+     * 日付での絞り込み処理
+     */
+    @PutMapping("/findDate/{createdDate}")
+    public ModelAndView findDate(@PathVariable ReportForm createdDate) {
+
+    }
+
+
 }

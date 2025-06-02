@@ -151,8 +151,16 @@ public class ReportService {
         Comment comment = new Comment();
         comment.setId(editComment.getId());
         comment.setText(editComment.getText());
+        comment.setReportId(editComment.getReportId());
         comment.setCreatedDate(LocalDateTime.now(ZoneId.of("Asia/Tokyo")));
         comment.setUpdatedDate(LocalDateTime.now(ZoneId.of("Asia/Tokyo")));
         return comment;
     }
+
+    //投稿を削除
+    public void commentDeleteById (Integer id) {
+        commentsRepository.deleteById(id);
+    }
+
+
 }
