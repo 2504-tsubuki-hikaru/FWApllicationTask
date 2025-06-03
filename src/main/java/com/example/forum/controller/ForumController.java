@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.ParseException;
 import java.util.List;
 
 @Controller
@@ -19,10 +20,11 @@ public class ForumController {
      * 投稿内容表示処理
      */
     @GetMapping
-    public ModelAndView top() {
+    public ModelAndView top(@RequestParam (name="start", required = false) String start,
+                            @RequestParam (name="end", required = false) String end) throws ParseException {
         ModelAndView mav = new ModelAndView();
         // 投稿を全件取得
-        List<ReportForm> contentData = reportService.findAllReport();
+        List<ReportForm> contentData = reportService.findAllReport(start, end);
         // 画面遷移先を指定
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
@@ -131,7 +133,7 @@ public class ForumController {
      */
     @PutMapping("/commentUpdate/{id}")
     public ModelAndView UpdateComment(@PathVariable Integer id,
-                                             @ModelAttribute("formModel") CommentForm comment) {
+                                      @ModelAttribute("formModel") CommentForm comment) {
         // UrlParameterのidを更新するentityにセット
         comment.setId(id);
         // 編集したコメントを更新
@@ -150,14 +152,4 @@ public class ForumController {
         // rootへリダイレクト
         return new ModelAndView("redirect:/");
     }
-
-    /*
-     * 日付での絞り込み処理
-     */
-    @PutMapping("/findDate/{createdDate}")
-    public ModelAndView findDate(@PathVariable ReportForm createdDate) {
-
-    }
-
-
 }

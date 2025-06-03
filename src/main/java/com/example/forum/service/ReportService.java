@@ -6,12 +6,16 @@ import com.example.forum.repository.CommentRepository;
 import com.example.forum.repository.ReportRepository;
 import com.example.forum.repository.entity.Comment;
 import com.example.forum.repository.entity.Report;
+import io.micrometer.common.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,8 +29,32 @@ public class ReportService {
     /*
      * レコード全件取得処理
      */
-    public List<ReportForm> findAllReport() {
-        List<Report> results = reportRepository.findAllByOrderByIdDesc();
+    public List<ReportForm> findAllReport(String start, String end) throws ParseException {
+
+        String strStartDate;
+        String strEndDate;
+
+            if (!StringUtils.isBlank(start)) {
+                strStartDate = start + " 00:00:00";
+            } else {
+                strStartDate = "2020-01-01 00:00:00";
+            }
+
+            if (!StringUtils.isBlank(end)) {
+                strEndDate = end + " 23:59:59";
+            } else {
+                //endの中身が空の場合は現在時刻を取得。デフォルト値の設定
+                Date nowDate = new Date();
+                SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+                strEndDate = sdFormat.format(nowDate) + " 23:59:59";
+            }
+
+        //Date型に型変換をして引数でわたす。(string型でDB実行をするとエラーになる為）
+        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDate = sdFormat.parse(strStartDate);
+        Date endDate = sdFormat.parse(strEndDate);
+
+        List<Report> results = reportRepository.findByUpdatedDateBetweenOrderByUpdatedDateDesc(startDate,endDate);
         List<ReportForm> reports = setReportForm(results);
         return reports;
     }
@@ -42,6 +70,7 @@ public class ReportService {
             Report result = results.get(i);
             report.setId(result.getId());
             report.setContent(result.getContent());
+            report.setUpdatedDate(result.getUpdatedDate());
             reports.add(report);
         }
         return reports;
@@ -62,6 +91,7 @@ public class ReportService {
         Report report = new Report();
         report.setId(reqReport.getId());
         report.setContent(reqReport.getContent());
+        report.setUpdatedDate(new Date());
         return report;
     }
 
@@ -161,6 +191,4 @@ public class ReportService {
     public void commentDeleteById (Integer id) {
         commentsRepository.deleteById(id);
     }
-
-
 }

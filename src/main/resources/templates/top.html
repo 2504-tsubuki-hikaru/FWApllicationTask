@@ -14,10 +14,11 @@
         <button class="new-button" type="button">新規投稿</button>
     </a>
 <!--カレンダーの表示-->
-    <form method="post" action="/メソッド名"></form>
-    日付　   <input type="date" name="start" value="${start}">
-            <input type="date" name="end" value="${end}">
+    <form action="./" method="get" >
+    日付 :　 <input type="date" name="start" th:value="${start}">
+            <input type="date" name="end" th:value="${end}">
             <input type="submit" value="絞込">
+    </form>
 
     <div class="message-icon" th:each="content : ${contents}">
         <div>
@@ -27,6 +28,9 @@
         </div>
         <div class="text">
             投稿 : <span th:text="${content.content}"/>
+        </div>
+        <div class="updatedDate">
+            <span th:text="${content.updatedDate}"/>
         </div>
         <div class="delete-button">
             <form th:action="@{/delete/{id}(id=${content.id})}" th:method="delete">
