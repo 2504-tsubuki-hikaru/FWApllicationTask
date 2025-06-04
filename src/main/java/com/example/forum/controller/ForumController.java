@@ -3,18 +3,29 @@ package com.example.forum.controller;
 import com.example.forum.controller.form.CommentForm;
 import com.example.forum.controller.form.ReportForm;
 import com.example.forum.service.ReportService;
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 public class ForumController {
+    //ReportService 型の Bean を reportService フィールドに自動的に注入する役割
+    //毎回　new=しなくても@Autowiredをつければ使える。
     @Autowired
     ReportService reportService;
+
+    @Autowired
+    HttpSession session;
+
 
     /*
      * 投稿内容表示処理
@@ -29,10 +40,11 @@ public class ForumController {
         mav.setViewName("/top");
         // 投稿データオブジェクトを保管
         mav.addObject("contents", contentData);
-        //25行目のような処理も必要になる。
+        //37行目のような処理も必要になる。
         List<CommentForm> commentData = reportService.findAllComment();
         //コメントも取得してMavにいれてhtmlで使えるようにする。
         mav.addObject("comments", commentData);
+
         return mav;
     }
 
@@ -48,6 +60,11 @@ public class ForumController {
         mav.setViewName("/new");
         // 準備した空のFormを保管
         mav.addObject("formModel", reportForm);
+        //errorMessages変数に新規投稿処理でついきした"errorMessages"を格納
+        List<String> errorMessages = (List<String>) session.getAttribute("errorMessages");
+        //格納した"errorMessages"をmavにセットしてhtmlに送信。
+        mav.addObject("errorMessages",errorMessages);
+        session.invalidate();
         return mav;
     }
 
@@ -55,7 +72,15 @@ public class ForumController {
      * 新規投稿処理
      */
     @PostMapping("/add")
-    public ModelAndView addContent(@ModelAttribute("formModel") ReportForm reportForm) {
+    //@ModelAttribute=戻り値は自動的にModelに追加される。
+    public ModelAndView addContent(@Validated @ModelAttribute("formModel") ReportForm reportForm, BindingResult result) {
+       //ReportFormにバリデーションのアノテーションを追加する
+        if (result.hasErrors()) {
+            List<String> errorMessages = new ArrayList<>();
+            errorMessages.add("メッセージを入力してください");
+            session.setAttribute("errorMessages", errorMessages);
+            return new ModelAndView("redirect:/new");
+        }
         // 投稿をテーブルに格納
         reportService.saveReport(reportForm);
         // rootへリダイレクト

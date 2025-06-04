@@ -138,7 +138,7 @@ public class ReportService {
      * コメントを全件取得
      */
     public List<CommentForm> findAllComment() {
-        List<Comment> comResults = commentsRepository.findAll();
+        List<Comment> comResults = commentsRepository.findAllByOrderByIdDesc();
         List<CommentForm> comments = setCommentForm(comResults);
         return comments;
     }

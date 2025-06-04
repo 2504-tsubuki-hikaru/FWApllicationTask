@@ -10,6 +10,14 @@
   <h2>新規投稿</h2>
 </div>
 <div class="main-contents">
+<!--エラーメッセージの表示-->
+  <div th:if="${!#lists.isEmpty(errorMessages)}">
+    <div class="errorMessages"th:each="messages : ${errorMessages}">
+      <span th:text="${messages}"/>
+    </div>
+    <!--<div th:remove var="errorMessages" scope="session" /></div>-->
+  </div>
+<!-- 新規投稿入力フォーム-->
   <form method="post" action="/add" th:object="${formModel}">
     <div class="form-area">
       <label>投稿内容</label>
