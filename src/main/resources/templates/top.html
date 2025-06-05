@@ -57,6 +57,14 @@
                 </div>
             </div>
         </div>
+        <!--エラーメッセージの表示-->
+        <div th:if="${!#lists.isEmpty(errorMessages)}">
+            <div th:if="${reportId == content.id}">
+                <div class="errorMessages" th:each="messages : ${errorMessages}">
+                    <span th:text="${messages}"/>
+                </div>
+            </div>
+        </div>
 <!--コメント編集画面遷移ボタン-->
             <form method="post" action="/commentAdd">
                 <div class="form-area">

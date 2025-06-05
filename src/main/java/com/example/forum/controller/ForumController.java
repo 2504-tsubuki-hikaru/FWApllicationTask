@@ -44,6 +44,19 @@ public class ForumController {
         List<CommentForm> commentData = reportService.findAllComment();
         //コメントも取得してMavにいれてhtmlで使えるようにする。
         mav.addObject("comments", commentData);
+        List<String> errorMessages = (List<String>) session.getAttribute("errorMessages");
+        //格納した"errorMessages"をmavにセットしてhtmlに送信。
+        mav.addObject("errorMessages",errorMessages);
+        //int型にすると!=nullが使えないのでIntegerを使う（ラッパークラス）
+        Integer reportId = (Integer) session.getAttribute("reportId");
+       /*セッションにreportIdがある時はエラーの時なのでif文にしないと、最初の画面表示でエラーになる。
+        reportIdがnullだと怒られるのでエラーの時のみmavにaddする*/
+        if (reportId != null) {
+            mav.addObject("reportId",reportId);
+        }
+
+        session.removeAttribute("errorMessages");
+        session.removeAttribute("reportId");
 
         return mav;
     }
@@ -77,7 +90,7 @@ public class ForumController {
        //ReportFormにバリデーションのアノテーションを追加する
         if (result.hasErrors()) {
             List<String> errorMessages = new ArrayList<>();
-            errorMessages.add("メッセージを入力してください");
+            errorMessages.add("投稿内容を入力してください");
             session.setAttribute("errorMessages", errorMessages);
             return new ModelAndView("redirect:/new");
         }
@@ -110,6 +123,11 @@ public class ForumController {
         mav.addObject("formModel", report);
         // 画面遷移先を指定
         mav.setViewName("/edit");
+        //errorMessages変数に追記した"errorMessages"を格納
+        List<String> errorMessages = (List<String>) session.getAttribute("errorMessages");
+        //格納した"errorMessages"をmavにセットしてhtmlに送信。
+        mav.addObject("errorMessages",errorMessages);
+        session.invalidate();
         return mav;
     }
 
@@ -118,7 +136,13 @@ public class ForumController {
      */
     @PutMapping("/update/{id}")
     public ModelAndView updateContent(@PathVariable Integer id,
-                                      @ModelAttribute("formModel") ReportForm report) {
+                                      @Validated @ModelAttribute("formModel") ReportForm report,BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errorMessages = new ArrayList<>();
+            errorMessages.add("投稿内容を入力してください");
+            session.setAttribute("errorMessages", errorMessages);
+            return new ModelAndView("redirect:/edit/" + id);
+        }
         // UrlParameterのidを更新するentityにセット
         report.setId(id);
         // 編集した投稿を更新
@@ -131,7 +155,14 @@ public class ForumController {
      * コメント投稿処理
      */
     @PostMapping("/commentAdd")
-    public ModelAndView addComment(@ModelAttribute("formModel") CommentForm commentForm) {
+    public ModelAndView addComment(@Validated @ModelAttribute("formModel") CommentForm commentForm,BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errorMessages = new ArrayList<>();
+            errorMessages.add("コメントを入力してください");
+            session.setAttribute("errorMessages", errorMessages);
+            session.setAttribute("reportId",commentForm.getReportId());
+            return new ModelAndView("redirect:/");
+        }
         // 投稿をテーブルに格納
         reportService.commentAddReport(commentForm);
         // rootへリダイレクト
@@ -150,6 +181,11 @@ public class ForumController {
         mav.addObject("formModel", comment);
         // 画面遷移先を指定(commentEdit.html)
         mav.setViewName("/commentEdit");
+        //errorMessages変数に追記した"errorMessages"を格納
+        List<String> errorMessages = (List<String>) session.getAttribute("errorMessages");
+        //格納した"errorMessages"をmavにセットしてhtmlに送信。
+        mav.addObject("errorMessages",errorMessages);
+        session.invalidate();
         return mav;
     }
 
@@ -158,7 +194,13 @@ public class ForumController {
      */
     @PutMapping("/commentUpdate/{id}")
     public ModelAndView UpdateComment(@PathVariable Integer id,
-                                      @ModelAttribute("formModel") CommentForm comment) {
+                                      @Validated @ModelAttribute("formModel") CommentForm comment,BindingResult result) {
+        if (result.hasErrors()) {
+            List<String> errorMessages = new ArrayList<>();
+            errorMessages.add("コメントを入力してください");
+            session.setAttribute("errorMessages", errorMessages);
+            return new ModelAndView("redirect:/commentEdit/" + id);
+        }
         // UrlParameterのidを更新するentityにセット
         comment.setId(id);
         // 編集したコメントを更新
